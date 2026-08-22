@@ -1,0 +1,36 @@
+[package]
+name = "oicio-rs"
+version = "0.6.0"
+edition = "2021"
+description = "OICIO — Optimized Infinite Context Intelligence Orchestration — MatMul-Free CPU-Only in Rust"
+authors = ["deepRcurs Labs @deeprcurs", "Mzed Imamkh @mzedimamkh"]
+license = "Apache-2.0"
+repository = "https://github.com/deeprcurs/oicio"
+keywords = ["llm", "ternary", "matmul-free", "cpu-only", "edge-ai"]
+categories = ["machine-learning", "embedded"]
+
+[dependencies]
+# No heavy dependencies — CPU only, no CUDA, no Python
+# All in .cargo (excluded from snapshot) — toolchain can be re-downloaded
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+memmap2 = "0.9"  # For swap manager — memory-mapped files for offloading tensors to disk
+byteorder = "1.5" # For packing ternary weights
+rand = "0.8" # For synthetic data generation (LLM as teacher)
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+
+# Target CPU only: x86-64-v2 baseline + AVX2/AVX-512 dispatch, ARM NEON, RISC-V, WASM
+# As per turbovec: lower x86 baseline to x86-64-v2 so pre-AVX2 CPUs reach scalar fallback
+# AVX2 and AVX-512 kernels are target_feature-gated
+
+[lib]
+name = "oicio_rs"
+path = "src/lib.rs"

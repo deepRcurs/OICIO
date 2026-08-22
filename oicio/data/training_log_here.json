@@ -1,0 +1,21 @@
+{
+  "model": "6.8M ternary",
+  "vocab_size": 1024,
+  "dim": 256,
+  "layers": 4,
+  "steps": 50,
+  "batch_size": 4,
+  "seq_len": 256,
+  "initial_loss": 6.948805332183838,
+  "final_loss": 6.937704563140869,
+  "loss_drop": 0.01110076904296875,
+  "time_seconds": 23.393130779266357,
+  "fp16_mb": 13.008331298828125,
+  "ternary_mb": 1.2845727157592775,
+  "compression": 10.1,
+  "swap": "14GB (10+5) active",
+  "ram": "1.9GB",
+  "hardware": "Consumer hardware only, no data center",
+  "method_correct": true,
+  "credits": "deepRcurs Labs @deeprcurs / Mzed Imamkh @mzedimamkh"
+}
