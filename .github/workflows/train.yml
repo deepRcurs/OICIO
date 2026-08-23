@@ -1,4 +1,4 @@
-name: OICIO Training From Scratch — Consumer Hardware Only
+name: "OICIO Training From Scratch - Consumer Hardware Only"
 
 on:
   push:
@@ -20,10 +20,10 @@ jobs:
     timeout-minutes: 360  # 6 hours max per GitHub Actions free tier
 
     steps:
-      - name: Checkout OICIO — deepRcurs Labs @deeprcurs / Mzed Imamkh @mzedimamkh
+      - name: "Checkout OICIO — deepRcurs Labs @deeprcurs / Mzed Imamkh @mzedimamkh"
         uses: actions/checkout@v4
 
-      - name: Setup Rust — Toolchain in .cargo (excluded, can re-download)
+      - name: "Setup Rust — Toolchain in .cargo (excluded, can re-download)"
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -31,7 +31,7 @@ jobs:
           override: true
           profile: minimal
 
-      - name: Setup Swap 10GB + 5GB = 14GB — Sebelum OOM (Aturan: jika RAM kurang swap 10GB,20GB,30GB...)
+      - name: "Setup Swap 10GB + 5GB = 14GB - Sebelum OOM (Aturan: jika RAM kurang swap 10GB,20GB,30GB...)"
         run: |
           echo "=== Before Swap ==="
           free -h
@@ -56,12 +56,12 @@ jobs:
 
           echo "Swap autoscale logic ready: 10GB -> 20GB -> 30GB jika RAM >80%"
 
-      - name: Setup Python — Toolchain in .venv (excluded)
+      - name: "Setup Python — Toolchain in .venv (excluded)"
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Python Deps — In .venv (excluded, can re-download)
+      - name: "Install Python Deps — In .venv (excluded, can re-download)"
         run: |
           python -m venv /tmp/venv
           source /tmp/venv/bin/activate
@@ -70,7 +70,7 @@ jobs:
           pip install numpy psutil tqdm huggingface_hub safetensors -q
           pip list | grep -E "torch|numpy|huggingface"
 
-      - name: Build OICIO Rust — 501KB native + 607KB musl static (like Needle2 14MB)
+      - name: "Build OICIO Rust — 501KB native + 607KB musl static (like Needle2 14MB)"
         run: |
           export CARGO_HOME=/tmp/cargo
           export RUSTUP_HOME=/tmp/rustup
@@ -85,7 +85,7 @@ jobs:
           echo "Running Rust binary 501KB (MatMul-Free CPU-Only)..."
           /tmp/oicio-rs-target/release/oicio 2>&1 | tail -30
 
-      - name: Training From Scratch HERE — Consumer Hardware Only — No GPU No CUDA
+      - name: "Training From Scratch HERE — Consumer Hardware Only — No GPU No CUDA"
         run: |
           source /tmp/venv/bin/activate
           echo "=== Training From Scratch HERE — 6.8M ternary 50 steps ==="
@@ -100,7 +100,7 @@ jobs:
           ls -lh oicio/data/ | tail -10
           cat oicio/data/training_log_here.json
 
-      - name: Push Checkpoint to HF Hub — Via HF_TOKEN (Tanpa Kartu Kredit/HP)
+      - name: "Push Checkpoint to HF Hub — Via HF_TOKEN (Tanpa Kartu Kredit/HP)"
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
@@ -146,7 +146,7 @@ jobs:
           print('HF Hub push complete: https://huggingface.co/deeprcurs-staff/OICIO')
           "
 
-      - name: Final Stats — Snapshot + Swap
+      - name: "Final Stats — Snapshot + Swap"
         run: |
           echo "=== Final Stats ==="
           free -h
