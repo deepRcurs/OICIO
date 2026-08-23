@@ -149,52 +149,6 @@ Based on BitNet Training Tips FAQ, Bonsai whitepaper, QLoRA, ZeRO-Offload, Axon:
 
 - **Tier 3 OICIO-Frontier (100% from scratch, high-end consumer):** Train 1.7B 0.4GB or 8B 1.75GB from scratch with 400B-1T tokens on Mac Studio M2 Ultra 192GB ~20-30 days. True ownership, no attribution.
 
-## Implementation — Snapshot Rules
-
-**Snapshot limit:** 128MB / 10K files
-
-**Snapshot-safe (<1MB):** Code only `oicio/` Python POC + `oicio-rs/` Rust CPU-only + whitepapers + README + Dockerfile + app.py + .github/workflows
-
-**Excluded (can re-download, outside snapshot):**
-- `.cache/`: Rust toolchain (Cargo, rustup), Python venv (torch 191MB CPU, transformers, safetensors, fastapi, gradio), models (BitNet 2B 1.1GB), swap files (10GB+5GB=14GB active, autoscale 20GB,30GB), checkpoints (32MB)
-- `.venv/`: Python venv
-- `.cargo/`, `target/`, `oicio-rs/target/`: Rust build artifacts
-- `__pycache__/`, `*.pt`, `*.safetensors`: Cache and weights
-- Total excluded: ~17GB
-
-**Rules:**
-- Do not disturb snapshot: keep code <128MB / 10K files, toolchain in `.cache` excluded
-- If RAM insufficient by calculation, swap before OOM: OS swap 10GB,20GB,30GB... in `.cache` + Python/Rust offload via memmap2
-
-**Proof:**
-- Snapshot: 64 files, 526KB total after cleanup, 57 files 466KB after Rust port
-- Swap: 14GB active (10+5), autoscale logic to 20GB demonstrated
-- Training: 6.8M model 50 steps 23.4s loss drop 0.0111 sparsity 31->34% in 1.9GB RAM + 14GB swap
-- Real weights: BitNet 2B 1.1GB safetensors 542 tensors loaded, ternary matmul no mul
-- Rust binary: 501KB native + 607KB musl static (like Needle2 14MB) + 4.5MB generated via rustc CPU-only, all MatMul-free CPU-only
-
-## Infrastructure — Free Tier Without Credit Card/Phone
-
-**For automation without manual steps, using 2 tokens (GH + HF) shared:**
-
-- **GitHub Token `ghp_...` (repo scope):** Push to `deepRcurs/OICIO`, setup Actions Secrets, trigger training in GitHub Actions Free (2-core CPU, 7GB RAM, 2000 min/month, no credit card, no phone verification). Already proven: Run 32607984794 status completed success with 11 steps success including Rust build 501KB and training from scratch HERE and push checkpoint to HF Hub via secret.
-
-- **HF Token `hf_...` (write):** Push to HuggingFace Hub `deeprcurs-staff/OICIO` (100GB private free, 5TB public best-effort, no credit card, no phone). Already proven: 61 files including BitNet 2B 1.1GB real weights + `training_logs/github_actions/training_log_here.json` pushed from GitHub Actions.
-
-- **MyBinder.org:** No account needed, just GitHub repo public https://github.com/deepRcurs/OICIO, VM 2GB RAM, auto-build https://mybinder.org/v2/gh/deepRcurs/OICIO/main, no credit card, no phone.
-
-- **Cloudflare R2:** 10GB free forever, 1M write, 10M read, unlimited egress, no credit card required per tutorial, S3-compatible, for backup.
-
-- **GitHub Releases:** Unlimited for public repo, for 14MB binary and whitepapers.
-
-**HF Spaces Free CPU per 2026:** As of July 2026, free CPU Basic for Gradio/Docker Spaces discontinued for new free users (community complaint 12 July 2026: "completely eliminate the free CPU Basic instance flavor"), only ZeroGPU remains with quota 3.5 min/day and Static Spaces free. So training in HF Spaces free is not feasible, but GitHub Actions free still works and Hub storage still free.
-
-**Final URLs:**
-- GitHub: https://github.com/deepRcurs/OICIO
-- HF Hub: https://huggingface.co/deeprcurs-staff/OICIO
-- MyBinder: https://mybinder.org/v2/gh/deepRcurs/OICIO/main
-- Latest Successful Run: https://github.com/deepRcurs/OICIO/actions/runs/32607984794
-
 ## References
 
 - EM-LLM: Human-inspired Episodic Memory for Infinite Context LLMs (ICLR 2025) — https://github.com/em-llm/EM-LLM-model
@@ -219,6 +173,6 @@ Apache 2.0 — for OICIO code (following Bonsai and Needle2). Model weights foll
 
 ---
 
-**Built in limited environment 1.9GB RAM + 14GB swap, consumer hardware only, no data center, no H100, no excuses, training from scratch HERE, Rust CPU-only, MatMul-free, no disturb snapshot, swap before OOM.**
+**Built in limited environment 1.9GB RAM + 14GB swap, consumer hardware only, no data center, no H100, no excuses, training from scratch HERE, Rust CPU-only, MatMul-free.**
 
 **OICIO = Outside-In Contextual Intelligence Orchestration, MatMul-Free CPU-Only, Intelligence Density > Parameter Count.**
