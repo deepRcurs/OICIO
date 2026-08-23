@@ -13,7 +13,7 @@
 
 Large language models have achieved remarkable capabilities through scaling dense attention O(N²) with FP16/BF16 weights on GPU clusters. This approach incurs substantial computational, memory, and capital costs, limiting accessibility and deployment on consumer hardware.
 
-We introduce OICIO, a new paradigm that achieves frontier-quality intelligence with fundamentally different architecture, computation, and capital requirements. OICIO eliminates matrix multiplication (MatMul) entirely from the architecture, replacing it with ternary accumulation, Walsh-Hadamard transforms, and table lookup. It maintains bounded memory via human-inspired episodic event segmentation and enables infinite context through harness recursion where the model writes code to orchestrate its own sub-agents.
+We introduce OICIO, a new paradigm that achieves better quality intelligence with fundamentally different architecture, computation, and capital requirements. OICIO eliminates matrix multiplication (MatMul) entirely from the architecture, replacing it with ternary accumulation, Walsh-Hadamard transforms, and table lookup. It maintains bounded memory via human-inspired episodic event segmentation and enables infinite context through harness recursion where the model writes code to orchestrate its own sub-agents.
 
 The reference implementation is in Rust, producing a 14MB self-contained binary that runs in 28MB RAM at 500 tokens/sec on Raspberry Pi 5, with CPU-only inference via AVX2/NEON and lookup table instructions (TBL/PSHUF). Training from scratch is demonstrated on consumer hardware only (1.9GB RAM + 14GB swap) with a correct recipe for ternary quantization-aware training, streaming data, and swap autoscaling.
 
@@ -180,7 +180,7 @@ High-End Consumer (Mac Studio M2 Ultra 192GB + 8TB SSD + MLX 107% speedup, or RT
 
 ### 7. Conclusion
 
-OICIO demonstrates that frontier-quality intelligence can be achieved with fundamentally different paradigm: MatMul-free computation with ternary weights, bounded episodic memory, and harness recursion. The approach enables training from scratch and inference on consumer hardware only, with 14GB swap autoscaling, without requiring data-center GPUs, CUDA, or Python at runtime.
+OICIO demonstrates that better quality intelligence can be achieved with fundamentally different paradigm: MatMul-free computation with ternary weights, bounded episodic memory, and harness recursion. The approach enables training from scratch and inference on consumer hardware only, with 14GB swap autoscaling, without requiring data-center GPUs, CUDA, or Python at runtime.
 
 The reference implementation in Rust produces a 14MB self-contained binary running in 28MB RAM, with CPU-only kernels via lookup tables and Hadamard transforms, achieving 4.1x faster than FP16 and 8.9x throughput, with brain-like efficiency via FPGA 13W and Loihi 2 neuromorphic 4.2W.
 

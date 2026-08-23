@@ -11,7 +11,7 @@
 
 ## Abstract
 
-OICIO is a new paradigm for large language models that achieves frontier-quality intelligence with a fundamentally different architecture, computation model, and capital requirement. Instead of scaling dense attention O(N²) with FP16 weights on GPU clusters, OICIO uses MatMul-free computation with ternary weights {-1,0,1} (1.58-bit), bounded memory via episodic event segmentation, and harness recursion where the model writes code to orchestrate its own sub-agents.
+OICIO is a new paradigm for large language models that achieves better quality intelligence with a fundamentally different architecture, computation model, and capital requirement. Instead of scaling dense attention O(N²) with FP16 weights on GPU clusters, OICIO uses MatMul-free computation with ternary weights {-1,0,1} (1.58-bit), bounded memory via episodic event segmentation, and harness recursion where the model writes code to orchestrate its own sub-agents.
 
 The system is designed to run and be trained from scratch on consumer hardware only, without requiring data-center GPUs, CUDA, or Python at runtime. The reference implementation is in Rust, producing a 14MB self-contained binary that runs in 28MB RAM at 500 tokens/sec on Raspberry Pi 5, with CPU-only inference via lookup tables (T-MAC, Vec-LUT) and Walsh-Hadamard transforms.
 
