@@ -147,7 +147,7 @@ Based on BitNet Training Tips FAQ, Bonsai whitepaper, QLoRA, ZeRO-Offload, Axon:
 
 - **Tier 2 OICIO-Bonsai (Fine-tune Apache 2.0/MIT, allowed rebrand):** Load Bonsai 8B 1.75GB or BitNet 2B 1.1GB, fine-tune LoRA with domain data 10B-50B tokens on RTX 3060 12GB (hours-days). Legal to rebrand as OICIO, with lineage mention in whitepaper but product name OICIO. 90% of stack (EM-LLM+TurboQuant+ReAttention+RAH+Triton+Axon) is 100% OICIO.
 
-- **Tier 3 OICIO-Frontier (100% from scratch, high-end consumer):** Train 1.7B 0.4GB or 8B 1.75GB from scratch with 400B-1T tokens on Mac Studio M2 Ultra 192GB ~20-30 days. True ownership, no attribution.
+- **Tier 3 OICIO-Alpha (100% from scratch, high-end consumer):** Train 1.7B 0.4GB or 8B 1.75GB from scratch with 400B-1T tokens on Mac Studio M2 Ultra 192GB ~20-30 days. True ownership, no attribution.
 
 ## References
 

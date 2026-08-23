@@ -67,7 +67,7 @@ async def root():
         "message": "OICIO API — Frontier at 1.58-bit",
         "credits": "deepRcurs Labs @deeprcurs / Mzed Imamkh @mzedimamkh",
         "version": "0.3.0",
-        "paradigm": "Outside-In Contextual Intelligence Orchestration",
+        "paradigm": "Optimized Infinite Context Intelligence Orchestration",
         "endpoints": ["/ingest", "/query", "/stats", "/swap", "/docs"]
     }
 
