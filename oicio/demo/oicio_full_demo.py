@@ -211,8 +211,8 @@ What we proved:
 ✓ NeedleMini 28MB RAM bounded forever, confidence-gated, grammar-constrained
 ✓ Axon compiles single .axon spec to all backends with speedups
 
-OICIO = Outside-In Contextual Intelligence Orchestration
-- Outside-In: context as external variable, programmed via code
+OICIO = Optimized Infinite Context Intelligence Orchestration
+- Optimized Infinite Context: context as external variable, programmed via code
 - Intelligence Density > Parameter Count
 - Frontier quality at 1.75GB, not 16GB, runs on iPhone + Pi5
 

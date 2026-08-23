@@ -207,7 +207,7 @@ By treating context as external environment programmable via code rather than te
 
 **Built in limited environment 1.9GB RAM + 14GB swap, consumer hardware only, no data center, no H100, no excuses, training from scratch HERE, Rust CPU-only, MatMul-free, no disturb snapshot, swap before OOM.**
 
-**OICIO = Outside-In Contextual Intelligence Orchestration, MatMul-Free CPU-Only, Intelligence Density > Parameter Count.**
+**OICIO = Optimized Infinite Context Intelligence Orchestration, MatMul-Free CPU-Only, Intelligence Density > Parameter Count.**
 
 **GitHub:** https://github.com/deepRcurs/OICIO  
 **HuggingFace Hub:** https://huggingface.co/deeprcurs-staff/OICIO  

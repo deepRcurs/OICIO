@@ -175,4 +175,4 @@ Apache 2.0 — for OICIO code (following Bonsai and Needle2). Model weights foll
 
 **Built in limited environment 1.9GB RAM + 14GB swap, consumer hardware only, no data center, no H100, no excuses, training from scratch HERE, Rust CPU-only, MatMul-free.**
 
-**OICIO = Outside-In Contextual Intelligence Orchestration, MatMul-Free CPU-Only, Intelligence Density > Parameter Count.**
+**OICIO = Optimized Infinite Context Intelligence Orchestration, MatMul-Free CPU-Only, Intelligence Density > Parameter Count.**

@@ -25,7 +25,7 @@ from oicio.edge.needle_mini import NeedleMini
 
 class OICIORuntime:
     """
-    Full OICIO Runtime: Outside-In Contextual Intelligence Orchestration
+    Full OICIO Runtime: Optimized Infinite Context Intelligence Orchestration
     """
     def __init__(self, 
                  vocab_size=1000,
