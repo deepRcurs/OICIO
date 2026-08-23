@@ -1,0 +1,9 @@
+{
+  "model": "6.8M ternary",
+  "steps": 100,
+  "initial_loss": 6.958588600158691,
+  "final_loss": 6.934200763702393,
+  "loss_drop": 0.024387836456298828,
+  "time": 84.25658702850342,
+  "swap": "14GB active"
+}
