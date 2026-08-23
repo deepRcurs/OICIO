@@ -1,3 +1,42 @@
+---
+license: apache-2.0
+language:
+- en
+tags:
+- ternary
+- matmul-free
+- cpu-only
+- rust
+- 1.58-bit
+- bitnet
+- bonsai
+- infinite-context
+- em-llm
+- reattention
+- recursive-agent-harness
+- rlm
+- rah
+- edge-ai
+- needle
+- hadamard
+- mlgru
+- mamba
+- rwkv
+- liquid-neural-networks
+- turbovec
+- turboquant
+- t-mac
+- vec-lut
+- axon
+- consumer-hardware
+- better-quality
+- intelligence-density
+pipeline_tag: text-generation
+library_name: oicio-rs
+base_model:
+- microsoft/BitNet-b1.58-2B-4T
+---
+
 # OICIO — Optimized Infinite Context Intelligence Orchestration
 
 **Credits:** deepRcurs Labs, @deeprcurs  
@@ -6,7 +45,7 @@
 **Account:** deeprcurs-staff  
 
 **GitHub:** https://github.com/deepRcurs/OICIO  
-**HuggingFace Hub:** https://huggingface.co/deeprcurs-staff/OICIO  
+**HuggingFace Hub:** https://huggingface.co/deepRcurs/OICIO  
 **MyBinder:** https://mybinder.org/v2/gh/deepRcurs/OICIO/main  
 
 ## Abstract
