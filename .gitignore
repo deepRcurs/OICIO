@@ -1,0 +1,19 @@
+# OICIO — Snapshot rules: toolchain, deps, model di luar snapshot (.cache excluded)
+.cache/
+.venv/
+.cargo/
+rustup/
+target/
+oicio-rs/target/
+__pycache__/
+*.pyc
+*.pyo
+*.pkl
+*.pt
+*.safetensors
+.env
+.idea/
+.vscode/
+*.log
+.DS_Store
+# Keep code only <128MB / 10K files
