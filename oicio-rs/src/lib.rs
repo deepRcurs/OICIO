@@ -20,6 +20,7 @@ pub mod memory;
 pub mod harness;
 pub mod edge;
 pub mod training;
+pub mod phase5;
 
 pub const VERSION: &str = "0.6.0";
 pub const AUTHOR: &str = "Mzed Imamkh @mzedimamkh";
