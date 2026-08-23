@@ -1,6 +1,6 @@
 """
 OICIO Core: Ternary Simple Attention Network
-Credits: deepRcurs Labs, @deeprcurs / Mzed Imamkh @mzedimamkh
+Credits: deepRcurs Labs, @deeprcurs / Mzed Imamkh, @mzedimamkh
 
 Menggabungkan:
 - BitNet b1.58: ternary {-1,0,1} absmean quantization
@@ -19,11 +19,12 @@ def hadamard_transform(x):
     """Fast Walsh-Hadamard Transform (FWHT) - fixed matrix, no weights, O(n log n)
     Dari Needle2: orthonormal Walsh-Hadamard transform
     Preserves leading dims, operates on last dim
+    Correct implementation like Rust: butterfly with add/sub only
     """
     orig_shape = x.shape
     n = orig_shape[-1]
-    # Reshape to 2D for transform: [*, n]
-    x_2d = x.reshape(-1, n)
+    # Clone to avoid in-place modification of original
+    x_2d = x.reshape(-1, n).clone()
     batch = x_2d.shape[0]
 
     # pad to power of 2 if needed
@@ -36,24 +37,22 @@ def hadamard_transform(x):
         n_padded = n
         pad = 0
 
+    # Correct FWHT like Rust: iterative butterfly
     h = 1
     while h < n_padded:
-        # x_2d: [batch, n_padded]
-        x_reshaped = x_2d.view(batch, n_padded // (h*2), h, 2)
-        a = x_reshaped[:, :, :, 0].clone()
-        b = x_reshaped[:, :, :, 1].clone()
-        x_reshaped[:, :, :, 0] = a + b
-        x_reshaped[:, :, :, 1] = a - b
-        x_2d = x_reshaped.view(batch, n_padded)
+        for i in range(0, n_padded, h*2):
+            for j in range(h):
+                a = x_2d[:, i+j].clone()
+                b = x_2d[:, i+j+h].clone()
+                x_2d[:, i+j] = a + b
+                x_2d[:, i+j+h] = a - b
         h *= 2
 
     x_2d = x_2d / math.sqrt(n_padded)
 
-    # Trim back to original n if padded
     if pad > 0:
         x_2d = x_2d[:, :n]
 
-    # Restore original shape
     return x_2d.view(orig_shape)
 
 class BitLinear(nn.Module):
