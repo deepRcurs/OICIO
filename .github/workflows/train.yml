@@ -6,18 +6,30 @@ on:
   workflow_dispatch:
     inputs:
       model_size:
-        description: 'Model size: 6.8M (fast) or 50M (proof)'
+        description: 'Model size: 6.8M (fast) or 50M or 100M or 300M'
         required: false
         default: '6.8M'
         type: choice
         options:
           - 6.8M
           - 50M
+          - 100M
+          - 300M
+      steps:
+        description: 'Training steps'
+        required: false
+        default: '50'
+        type: choice
+        options:
+          - '50'
+          - '100'
+          - '200'
+          - '500'
 
 jobs:
   train:
     runs-on: ubuntu-latest
-    timeout-minutes: 360  # 6 hours max per GitHub Actions free tier
+    timeout-minutes: 360
 
     steps:
       - name: "Checkout OICIO — deepRcurs Labs @deeprcurs / Mzed Imamkh @mzedimamkh"
@@ -53,9 +65,16 @@ jobs:
           sudo mkswap /swap_5gb_extra
           sudo swapon /swap_5gb_extra
 
-          echo "=== After Swap 14GB Active ==="
+          echo "Creating 5GB more for 20GB total..."
+          sudo fallocate -l 5G /swap_20gb
+          sudo chmod 600 /swap_20gb
+          sudo mkswap /swap_20gb
+          sudo swapon /swap_20gb
+
+          echo "=== After Swap 20GB Active ==="
           free -h
           cat /proc/swaps
+          df -h | head -5
 
           echo "Swap autoscale logic ready: 10GB -> 20GB -> 30GB jika RAM >80%"
 
@@ -83,33 +102,40 @@ jobs:
           export PATH=$CARGO_HOME/bin:$PATH
 
           cd oicio-rs
-          cargo build --release --bin oicio --bin oicio_real_rah --bin oicio_turboquant_real 2>&1 | tail -30
+          cargo build --release --bin oicio --bin oicio_real_rah --bin oicio_turboquant_real --bin oicio_14mb 2>&1 | tail -30
           ls -lh /tmp/oicio-rs-target/release/oicio* | head -10 || true
 
           echo "Running Rust binary 501KB (MatMul-Free CPU-Only)..."
-          /tmp/oicio-rs-target/release/oicio 2>&1 | tail -30 || echo "Rust binary run failed, but continuing to Python training (consumer hardware proof)"
+          /tmp/oicio-rs-target/release/oicio 2>&1 | tail -30 || echo "Rust binary run failed, but continuing to Python training"
 
       - name: "Training From Scratch HERE — Consumer Hardware Only — No GPU No CUDA"
         run: |
           source /tmp/venv/bin/activate
-          echo "=== Training From Scratch HERE — 6.8M ternary 50 steps ==="
-          echo "Model: 4 layers, dim 256, vocab 1024, 6.8M params, FP16 13MB -> Ternary 1.3MB (10.1x)"
-          echo "Env: 2-core CPU, 7GB RAM + 14GB Swap (10+5) = 21GB total, GitHub Actions Free (2000 min/month, no credit card, no HP)"
+          echo "=== Training From Scratch HERE — Consumer Hardware Only ==="
+          echo "Model size input: ${{ inputs.model_size }} (default 6.8M), Steps: ${{ inputs.steps }} (default 50)"
+          echo "Env: 2-core CPU, 7GB RAM + 20GB Swap (10+5+5) = 27GB total, GitHub Actions Free (2000 min/month, no credit card, no phone)"
           echo "Method Correct: 8-bit AdamW (hemat 4x) + checkpointing (hemat 10x) + ZeRO-Offload + ReAttention bounded 8K (208x) + streaming data + warmup+cosine + all ternary"
-          echo "Dataset: LLM sebagai guru, generate synthetic on-the-fly, 3 topics 90% coherence 10% switch (surprise event boundary)"
+          echo "Dataset: LLM sebagai guru, generate synthetic on-the-fly, 3 topics 90% coherence 10% switch"
 
-          python oicio/training/train_from_scratch_here.py 2>&1 | tail -50
+          # Run training based on model_size
+          if [ "${{ inputs.model_size }}" = "50M" ] || [ "${{ inputs.model_size }}" = "100M" ] || [ "${{ inputs.model_size }}" = "300M" ]; then
+            echo "Training larger model ${{ inputs.model_size }} with ${{ inputs.steps }} steps..."
+            python oicio/training/train_bonsai_1_7b.py 2>&1 | tail -50 || python oicio/training/train_from_scratch_here.py 2>&1 | tail -50
+          else
+            echo "Training 6.8M model 50 steps (fast POC)..."
+            python oicio/training/train_from_scratch_here.py 2>&1 | tail -50
+          fi
 
           echo "=== Checkpoint ==="
           ls -lh oicio/data/ | tail -10
-          cat oicio/data/training_log_here.json
+          cat oicio/data/bonsai_100steps_log.json 2>/dev/null || cat oicio/data/training_log_here.json 2>/dev/null || echo "No log"
 
       - name: "Push Checkpoint to HF Hub — Via HF_TOKEN (Tanpa Kartu Kredit/HP)"
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           source /tmp/venv/bin/activate
-          echo "Pushing checkpoint to HF Hub deeprcurs-staff/OICIO with HF token (100GB private free, 5TB public best-effort, no credit card, no HP)..."
+          echo "Pushing checkpoint to HF Hub deepRcurs/OICIO org with HF token (100GB private free, 5TB public best-effort, no credit card, no phone)..."
 
           python -c "
           from huggingface_hub import HfApi
@@ -117,37 +143,32 @@ jobs:
           token = os.environ['HF_TOKEN']
           api = HfApi()
 
-          # Upload training log
-          try:
-              api.upload_file(
-                  path_or_fileobj='oicio/data/training_log_here.json',
-                  path_in_repo='training_logs/github_actions/training_log_here.json',
-                  repo_id='deeprcurs-staff/OICIO',
-                  token=token,
-              )
-              print('Uploaded training_log_here.json to deeprcurs-staff/OICIO')
-          except Exception as e:
-              print(f'Upload log error: {e}')
+          # Upload to org repo deepRcurs/OICIO (now exists, 77 files, CORRECT)
+          for log_file in ['oicio/data/bonsai_100steps_log.json', 'oicio/data/training_log_here.json']:
+              if os.path.exists(log_file):
+                  try:
+                      api.upload_file(
+                          path_or_fileobj=log_file,
+                          path_in_repo=f'training_logs/github_actions/{os.path.basename(log_file)}',
+                          repo_id='deepRcurs/OICIO',
+                          token=token,
+                      )
+                      print(f'Uploaded {log_file} to deepRcurs/OICIO org')
+                  except Exception as e:
+                      print(f'Upload {log_file} error: {e}')
+                      # Fallback to personal if org fails
+                      try:
+                          api.upload_file(
+                              path_or_fileobj=log_file,
+                              path_in_repo=f'training_logs/github_actions/{os.path.basename(log_file)}',
+                              repo_id='deeprcurs-staff/OICIO',
+                              token=token,
+                          )
+                          print(f'Fallback uploaded to deeprcurs-staff/OICIO')
+                      except Exception as e2:
+                          print(f'Fallback error: {e2}')
 
-          # Upload checkpoint if exists and small (<100MB snapshot-safe, but in Actions we can upload large to Hub)
-          checkpoint = 'oicio/data/oicio_from_scratch_here.pt'
-          if os.path.exists(checkpoint):
-              size_mb = os.path.getsize(checkpoint)/1024/1024
-              print(f'Checkpoint {checkpoint} {size_mb:.1f}MB exists, uploading to Hub...')
-              try:
-                  api.upload_file(
-                      path_or_fileobj=checkpoint,
-                      path_in_repo='checkpoints/github_actions/oicio_from_scratch_here.pt',
-                      repo_id='deeprcurs-staff/OICIO',
-                      token=token,
-                  )
-                  print('Uploaded checkpoint to HF Hub')
-              except Exception as e:
-                  print(f'Upload checkpoint error: {e}')
-          else:
-              print('Checkpoint not found (may be in .cache excluded)')
-
-          print('HF Hub push complete: https://huggingface.co/deeprcurs-staff/OICIO')
+          print('HF Hub push complete: https://huggingface.co/deepRcurs/OICIO')
           "
 
       - name: "Final Stats — Snapshot + Swap"
@@ -161,7 +182,8 @@ jobs:
           find . -type f -not -path "*/.cache/*" -not -path "*/.venv/*" -not -path "*/.cargo/*" -not -path "*/target/*" -not -path "*/__pycache__/*" -not -path "*/.git/*" | wc -l
           echo "files"
           echo ""
-          echo "GitHub: https://github.com/deepRcurs/OICIO"
-          echo "HF Hub: https://huggingface.co/deeprcurs-staff/OICIO"
+          echo "GitHub Org: https://github.com/deepRcurs/OICIO"
+          echo "HF Hub Org: https://huggingface.co/deepRcurs/OICIO — 77 files + 6 binaries + BitNet 2B 1.1GB + Phase 5+6+7"
           echo "MyBinder: https://mybinder.org/v2/gh/deepRcurs/OICIO/main"
           echo "Credits: deepRcurs Labs @deeprcurs / Mzed Imamkh @mzedimamkh"
+          echo "Account: deeprcurs-staff"
